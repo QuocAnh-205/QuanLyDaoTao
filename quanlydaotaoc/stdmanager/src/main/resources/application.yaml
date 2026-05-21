@@ -1,0 +1,50 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: stdmanager
+
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:stdmanager_db};trustServerCertificate=true
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:UniItAdmin2026}
+    # Hibernate 6 tự nhận diện Driver, không nhất thiết phải khai báo thủ công
+  
+  jpa:
+    open-in-view: false # Tắt OSIV để tránh lãng phí kết nối và lỗi tiềm ẩn
+    hibernate:
+      ddl-auto: validate # Sử dụng Flyway quản lý schema
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true # Định dạng SQL cho dễ đọc trong log
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    # repair-on-migrate: true        # Tự động repair checksum mismatch khi migrate
+    # out-of-order: false
+    locations: classpath:db/migration
+  logging:
+    level:
+      org.flywaydb: DEBUG
+
+# Cấu hình SpringDoc để Swagger hoạt động ổn định
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  packages-to-scan: uni.it.stdmanager.modules # Giới hạn vùng quét để tránh lỗi 500
+
+
+# logging:
+#   file:
+#     name: logs/application.log # Specify the log file location
+#   level:
+#     root: INFO
+#     org.springdoc: DEBUG
+#     io.swagger: DEBUG
+#     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#     org.springframework.web: DEBUG

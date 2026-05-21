@@ -1,0 +1,18 @@
+# version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: uni_it_sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=UniItAdmin2026
+      - MSSQL_PID=Developer
+    volumes:
+      - mssql_data:/var/opt/mssql
+networks:
+  uni_network:
+    driver: bridge
+volumes:
+  mssql_data:
