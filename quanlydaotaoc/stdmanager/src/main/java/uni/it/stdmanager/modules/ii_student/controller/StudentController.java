@@ -78,4 +78,12 @@ public class StudentController {
         List<StudentStatusResponse> response = studentService.getStatusHistory(id);
         return ApiResponse.success(response, "Lấy lịch sử trạng thái thành công");
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GIAOVU')")
+    @Operation(summary = "7. Xóa sinh viên", description = "Xóa hoàn toàn hồ sơ sinh viên, tài khoản, và dữ liệu liên quan")
+    public ApiResponse<Void> deleteStudent(@PathVariable UUID id) {
+        studentService.deleteStudent(id);
+        return ApiResponse.success(null, "Xóa sinh viên thành công");
+    }
 }

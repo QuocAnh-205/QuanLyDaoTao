@@ -28,12 +28,20 @@ import uni.it.stdmanager.modules.ii_student.entity.StudentStatus;
 import uni.it.stdmanager.modules.ii_student.repository.StudentClassRepository;
 import uni.it.stdmanager.modules.ii_student.repository.StudentRepository;
 import uni.it.stdmanager.modules.ii_student.repository.StudentStatusRepository;
+import uni.it.stdmanager.modules.vi_registration.repository.CourseRegistrationRepository;
+import uni.it.stdmanager.modules.v_semester.repository.StudentCourseSectionRepository;
+import uni.it.stdmanager.modules.vii_tuition.repository.StudentTuitionRepository;
+import uni.it.stdmanager.modules.vi_registration.entity.CourseRegistration;
+import uni.it.stdmanager.modules.v_semester.entity.StudentCourseSection;
+import uni.it.stdmanager.modules.vii_tuition.entity.StudentTuition;
 
 import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +55,12 @@ public class StudentServiceImpl implements StudentService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CourseRegistrationRepository courseRegistrationRepository;
+    private final StudentCourseSectionRepository studentCourseSectionRepository;
+    private final StudentTuitionRepository studentTuitionRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Page<StudentResponse> searchStudents(StudentSearchRequest request) {
@@ -246,5 +260,66 @@ public class StudentServiceImpl implements StudentService {
             // fallback
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteStudent(UUID id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên"));
+
+        // 1. Clear current status to prevent circular foreign key constraints
+        student.setCurrentStatus(null);
+        studentRepository.saveAndFlush(student);
+
+        // 2. Clear unmapped child constraints via native SQL to prevent FK violations
+        // 2.1 Delete payments referencing student's tuitions
+        entityManager.createNativeQuery(
+            "DELETE FROM payments WHERE tuition_id IN (SELECT id FROM student_tuition WHERE student_id = :studentId)"
+        ).setParameter("studentId", id).executeUpdate();
+
+        // 2.2 Delete student component grades referencing student's course registrations
+        entityManager.createNativeQuery(
+            "DELETE FROM student_component_grades WHERE registration_id IN (SELECT id FROM course_registrations WHERE student_id = :studentId)"
+        ).setParameter("studentId", id).executeUpdate();
+
+        // 2.3 Delete student summaries referencing student's course registrations
+        entityManager.createNativeQuery(
+            "DELETE FROM student_summaries WHERE registration_id IN (SELECT id FROM course_registrations WHERE student_id = :studentId)"
+        ).setParameter("studentId", id).executeUpdate();
+
+        // 3. Delete Course Registrations
+        List<CourseRegistration> registrations = courseRegistrationRepository.findAllByStudentId(id);
+        courseRegistrationRepository.deleteAll(registrations);
+
+        // 4. Delete Student Course Sections
+        List<StudentCourseSection> sections = studentCourseSectionRepository.findAllByStudentId(id);
+        studentCourseSectionRepository.deleteAll(sections);
+
+        // 5. Delete Student Tuitions
+        List<StudentTuition> tuitions = studentTuitionRepository.findAllByStudentId(id);
+        studentTuitionRepository.deleteAll(tuitions);
+
+        // 6. Delete Student Status records (History)
+        List<StudentStatus> statuses = studentStatusRepository.findAllByStudentIdOrderByStartDateDesc(id);
+        studentStatusRepository.deleteAll(statuses);
+
+        // 7. Keep reference to User before deleting Student
+        User user = student.getUser();
+
+        // 8. Delete Student
+        studentRepository.delete(student);
+
+        // 9. Delete User Role mappings, User notifications, and User account
+        if (user != null) {
+            userRoleRepository.deleteAllByUser(user);
+            
+            // Delete user notifications referencing the user
+            entityManager.createNativeQuery(
+                "DELETE FROM user_notifications WHERE user_id = :userId"
+            ).setParameter("userId", user.getId()).executeUpdate();
+            
+            userRepository.delete(user);
+        }
     }
 }

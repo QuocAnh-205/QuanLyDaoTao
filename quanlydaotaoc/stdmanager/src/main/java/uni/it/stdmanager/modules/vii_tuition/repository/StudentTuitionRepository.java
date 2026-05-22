@@ -19,17 +19,19 @@ public interface StudentTuitionRepository extends JpaRepository<StudentTuition, 
 
     Optional<StudentTuition> findByStudentIdAndSemesterIdAndIsActiveTrue(UUID studentId, UUID semesterId);
 
-    @EntityGraph(attributePaths = {"student", "student.studentClass", "semester", "tuitionFee"})
+    List<StudentTuition> findAllByStudentId(UUID studentId);
+
+    @EntityGraph(attributePaths = { "student", "student.studentClass", "semester", "tuitionFee" })
     @Query("SELECT st FROM StudentTuition st WHERE st.isActive = true AND " +
-           "(:semesterId IS NULL OR st.semester.id = :semesterId) AND " +
-           "(:classId IS NULL OR st.student.studentClass.id = :classId) AND " +
-           "(:status IS NULL OR st.status = :status) AND " +
-           "(:keyword IS NULL OR LOWER(st.student.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(st.student.studentCode) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "(:semesterId IS NULL OR st.semester.id = :semesterId) AND " +
+            "(:classId IS NULL OR st.student.studentClass.id = :classId) AND " +
+            "(:status IS NULL OR st.status = :status) AND " +
+            "(:keyword IS NULL OR LOWER(st.student.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(st.student.studentCode) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<StudentTuition> searchStudentTuitions(@Param("semesterId") UUID semesterId,
-                                               @Param("classId") UUID classId,
-                                               @Param("status") Integer status,
-                                               @Param("keyword") String keyword,
-                                               Pageable pageable);
+            @Param("classId") UUID classId,
+            @Param("status") Integer status,
+            @Param("keyword") String keyword,
+            Pageable pageable);
 
     @Query("SELECT DISTINCT cr.student.id FROM CourseRegistration cr WHERE cr.courseSection.semester.id = :semesterId AND cr.isActive = true AND cr.status IN (1, 2)")
     List<UUID> findStudentIdsWithRegistrations(@Param("semesterId") UUID semesterId);

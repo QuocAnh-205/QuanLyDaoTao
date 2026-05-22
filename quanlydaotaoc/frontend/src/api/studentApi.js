@@ -24,6 +24,10 @@ export const studentApi = {
     getStatusHistory: (id) => {
         return axiosClient.get(`/students/${id}/status-history`);
     },
+
+    delete: (id) => {
+        return axiosClient.delete(`/students/${id}`);
+    },
 };
 
 export const classApi = {

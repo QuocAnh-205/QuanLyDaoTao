@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
 import MainLayout from './layouts/MainLayout';
+import { Toaster } from 'react-hot-toast';
 
 // Import Pages
 import LoginPage from './pages/LoginPage';
@@ -14,6 +15,7 @@ import LecturerManagementPage from './pages/lecturers/LecturerManagementPage';
 
 import ProfilePage from './pages/ProfilePage';
 import ERDiagramView from './pages/ERDiagramView';
+import SystemConfigPage from './pages/SystemConfigPage';
 
 // Modules IV & V
 import CourseManagementPage from './pages/academic-management/CourseManagementPage';
@@ -31,7 +33,9 @@ const Placeholder = ({ title }) => (
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
+      <Toaster position="top-right" reverseOrder={false} />
+      <BrowserRouter>
       <Routes>
         {/* NHÓM 1: PUBLIC ROUTES - Dành cho khách / chưa đăng nhập */}
         <Route element={<PublicRoute />}>
@@ -66,6 +70,7 @@ function App() {
             <Route path="/finance" element={<Placeholder title="Học phí & Giao dịch tài chính" />} />
             <Route path="/exams" element={<Placeholder title="Khảo thí & Xét tốt nghiệp" />} />
             <Route path="/settings" element={<Placeholder title="Thông báo & Cấu hình hệ thống" />} />
+            <Route path="/system-config" element={<SystemConfigPage />} />
           </Route>
         </Route>
 
@@ -73,6 +78,7 @@ function App() {
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 

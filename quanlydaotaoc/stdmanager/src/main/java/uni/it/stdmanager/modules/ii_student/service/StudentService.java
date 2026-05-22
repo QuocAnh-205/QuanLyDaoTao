@@ -24,4 +24,6 @@ public interface StudentService {
     StudentResponse changeStatus(UUID id, StudentStatusChangeRequest request);
 
     List<StudentStatusResponse> getStatusHistory(UUID id);
+
+    void deleteStudent(UUID id);
 }

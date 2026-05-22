@@ -1,5 +1,5 @@
-// src/pages/students/StudentListPage.jsx
 import { useState, useEffect, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { studentApi } from '../../api/studentApi';
 import useAuthStore from '../../store/useAuthStore';
 import StudentFormModal from '../../components/StudentFormModal';
@@ -15,6 +15,7 @@ const StudentListPage = () => {
     const { user } = useAuthStore();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
 
@@ -88,6 +89,32 @@ const StudentListPage = () => {
 
     const closeModal = () => {
         setModalState({ type: null, isOpen: false, data: null });
+    };
+
+    const handleDeleteConfirm = async () => {
+        console.log('handleDeleteConfirm triggered. Student data:', modalState.data);
+        if (!modalState.data?.id) {
+            toast.error('Không tìm thấy ID sinh viên để xóa!');
+            return;
+        }
+        setIsDeleting(true);
+        try {
+            await toast.promise(
+                studentApi.delete(modalState.data.id),
+                {
+                    loading: 'Đang thực hiện xóa sinh viên...',
+                    success: 'Xóa sinh viên thành công!',
+                    error: (err) => err.response?.data?.message || 'Có lỗi xảy ra khi xóa sinh viên'
+                }
+            );
+            fetchStudents();
+            closeModal();
+        } catch (error) {
+            console.error('Lỗi khi xóa sinh viên:', error);
+            toast.error(error.response?.data?.message || error.message || 'Lỗi không xác định khi xóa sinh viên');
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     const canEdit = user?.roles?.some(r => ['ADMIN', 'GIAOVU'].includes(r));
@@ -279,11 +306,15 @@ const StudentListPage = () => {
                                                         >
                                                             <UserCheck size={18} />
                                                         </button>
+                                                        <button
+                                                            onClick={() => openModal('DELETE', student)}
+                                                            className="p-2.5 bg-white text-slate-400 hover:text-rose-600 hover:shadow-lg rounded-xl transition-all border border-slate-100"
+                                                            title="Xóa sinh viên"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
                                                     </>
                                                 )}
-                                                <button className="p-2.5 text-slate-300 hover:text-slate-600 transition-colors">
-                                                    <MoreVertical size={18} />
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -343,6 +374,47 @@ const StudentListPage = () => {
                     closeModal();
                 }}
             />
+
+            {/* Delete Confirmation Modal */}
+            {modalState.isOpen && modalState.type === 'DELETE' && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300">
+                    <div className="bg-white/95 backdrop-blur-md rounded-[2rem] border border-slate-200/80 shadow-2xl p-8 max-w-md w-full animate-scaleUp relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-500 to-rose-600"></div>
+                        <div className="flex flex-col items-center text-center mt-4">
+                            <div className="p-4 rounded-2xl bg-rose-50 text-rose-500 mb-6">
+                                <Trash2 size={36} />
+                            </div>
+                            <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-2">
+                                Xác nhận xóa sinh viên
+                            </h3>
+                            <div className="text-slate-500 font-medium text-sm leading-relaxed mb-6 text-center">
+                                Bạn có chắc chắn muốn xóa sinh viên <span className="font-bold text-slate-800">{modalState.data?.fullName}</span> (MSSV: <span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-blue-600 font-bold">{modalState.data?.studentCode}</span>)? 
+                                <span className="text-rose-500 font-semibold text-xs mt-3 block p-3 bg-rose-50/50 rounded-2xl border border-rose-100/50 text-left leading-normal">
+                                    ⚠️ Hành động này sẽ xóa vĩnh viễn hồ sơ sinh viên, tài khoản đăng nhập, lịch sử học tập, đăng ký học phần và dữ liệu học phí liên quan. Không thể hoàn tác!
+                                </span>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={closeModal}
+                                disabled={isDeleting}
+                                className="flex-1 py-3.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirm}
+                                disabled={isDeleting}
+                                className="flex-1 py-3.5 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-rose-100 hover:from-red-600 hover:to-rose-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                {isDeleting ? (
+                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                ) : 'Xóa vĩnh viễn'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -15,14 +15,14 @@ import java.util.UUID;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 
-    @EntityGraph(attributePaths = {"tuition", "tuition.student", "tuition.semester"})
-    List<Payment> findAllByTuitionIdAndIsActiveTrueOrderByPaymentDateDesc(UUID tuitionId);
+       @EntityGraph(attributePaths = { "tuition", "tuition.student", "tuition.semester" })
+       List<Payment> findAllByTuitionIdAndIsActiveTrueOrderByPaymentDateDesc(UUID tuitionId);
 
-    @EntityGraph(attributePaths = {"tuition", "tuition.student", "tuition.semester"})
-    @Query("SELECT p FROM Payment p WHERE p.isActive = true AND " +
-           "(:studentId IS NULL OR p.tuition.student.id = :studentId) AND " +
-           "(:semesterId IS NULL OR p.tuition.semester.id = :semesterId)")
-    Page<Payment> searchPayments(@Param("studentId") UUID studentId,
-                                 @Param("semesterId") UUID semesterId,
-                                 Pageable pageable);
+       @EntityGraph(attributePaths = { "tuition", "tuition.student", "tuition.semester" })
+       @Query("SELECT p FROM Payment p WHERE p.isActive = true AND " +
+                     "(:studentId IS NULL OR p.tuition.student.id = :studentId) AND " +
+                     "(:semesterId IS NULL OR p.tuition.semester.id = :semesterId)")
+       Page<Payment> searchPayments(@Param("studentId") UUID studentId,
+                     @Param("semesterId") UUID semesterId,
+                     Pageable pageable);
 }
