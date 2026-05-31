@@ -13,7 +13,7 @@ Dưới đây là lộ trình xây dựng hệ thống từ nền tảng kỹ th
 
 *   **Docker hóa Database:** Triển khai SQL Server trên Docker để đồng bộ môi trường phát triển cho toàn đội ngũ.
 *   **Thiết kế Schema 13 nhóm bảng:** Quy hoạch toàn bộ cấu trúc dữ liệu từ sinh viên, giảng viên, học phí đến lịch thi.
-*   **Flyway Migration:** Sử dụng Flyway để quản lý phiên bản cơ sở dữ liệu (từ `V1` đến `V14`), giúp việc nâng cấp database trở nên tự động và không bị lỗi xung đột.
+*   **Flyway Migration:** Sử dụng Flyway để quản lý phiên bản cơ sở dữ liệu (từ `V1` đến `V23`), giúp việc nâng cấp database trở nên tự động và không bị lỗi xung đột.
 
 ### ⚙️ Giai đoạn 2: Xây dựng "Xương sống" Backend (Core Engine)
 *Thiết lập bộ khung logic cho Spring Boot 3 để xử lý các yêu cầu nghiệp vụ phức tạp.*

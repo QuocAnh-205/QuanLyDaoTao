@@ -1,20 +1,21 @@
-# 1. Chọn phiên bản Node.js (nên chọn bản LTS ổn định)
-FROM node:20-alpine
-
-# 2. Tạo thư mục làm việc bên trong container
+# Stage 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-# 3. Copy file quản lý thư viện vào trước để cache (tối ưu thời gian build)
-COPY package*.json ./
+# Copy Maven POM and cache dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# 4. Cài đặt các thư viện
-RUN npm install --production
+# Copy source and package the jar
+COPY src ./src
+RUN mvn package -DskipTests
 
-# 5. Copy toàn bộ code còn lại vào container
-COPY . .
+# Stage 2: Run the application
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-# 6. Mở cổng mạng (Render sẽ tự động map cổng này)
-EXPOSE 3000
+# Spring Boot default port, Render will automatically map this or use SERVER_PORT
+EXPOSE 8080
 
-# 7. Lệnh để khởi chạy server (Thay "server.js" bằng file chạy chính của bạn, ví dụ: index.js, app.js)
-CMD ["node", "server.js"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

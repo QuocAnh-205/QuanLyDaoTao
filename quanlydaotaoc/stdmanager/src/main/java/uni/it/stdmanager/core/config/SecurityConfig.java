@@ -16,6 +16,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import uni.it.stdmanager.core.security.JwtAuthenticationFilter; // Bỏ comment sau khi tạo file này
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +25,9 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity // Kích hoạt @PreAuthorize trên Controller
 public class SecurityConfig {
+
+        @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:5174}")
+        private List<String> allowedOrigins;
 
         @Bean
         public SecurityFilterChain securityFilterChain(
@@ -63,8 +68,8 @@ public class SecurityConfig {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                // Cấp phép cho cổng mặc định của Vite (React)
-                configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+                // Cấp phép cho các cổng động từ cấu hình (React)
+                configuration.setAllowedOrigins(allowedOrigins);
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
                 configuration.setAllowCredentials(true);

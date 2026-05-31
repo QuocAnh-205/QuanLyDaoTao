@@ -40,6 +40,10 @@ springdoc:
     path: /swagger-ui.html
   packages-to-scan: uni.it.stdmanager.modules # Giới hạn vùng quét để tránh lỗi 500
 
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174}
+
 
 # logging:
 #   file:
