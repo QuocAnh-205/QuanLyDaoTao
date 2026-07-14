@@ -29,4 +29,9 @@ export const MENU_ITEMS = [
         path: '/tuition',
         roles: ['ADMIN', 'GIAOVU', 'SINHVIEN'],
     },
+    {
+        title: 'Quản lý Điểm',
+        path: '/grades',
+        roles: ['ADMIN', 'GIAOVU', 'GIANGVIEN', 'SINHVIEN'],
+    },
 ];

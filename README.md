@@ -310,6 +310,19 @@ Hoặc dùng Maven Wrapper:
 ./mvnw spring-boot:run
 ```
 
+> [!NOTE]
+> **Đối với Windows (nếu thư mục chứa tiếng Việt có dấu/khoảng trắng hoặc RAM yếu):**
+> Lệnh `spring-boot:run` có thể gặp lỗi `ClassNotFoundException` do classpath bị lỗi mã hóa đường dẫn. Hãy sử dụng phương pháp chạy trực tiếp file JAR dưới đây:
+> 1. **Biên dịch & Đóng gói:**
+>    ```bash
+>    .\mvnw.cmd clean package -DskipTests
+>    ```
+> 2. **Khởi chạy ứng dụng (tiết kiệm RAM & sửa lỗi đường dẫn):**
+>    ```bash
+>    java -Xmx512m -XX:+UseSerialGC "-Dfile.encoding=UTF-8" -jar target/stdmanager-0.0.1-SNAPSHOT.jar
+>    ```
+
+
 ### 2.5. Xác minh Backend đã chạy thành công
 
 Quan sát log trong terminal, khi thấy dòng tương tự sau nghĩa là đã thành công:

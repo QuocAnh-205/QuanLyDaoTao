@@ -29,8 +29,9 @@ axiosClient.interceptors.response.use(
     },
     (error) => {
         const { response } = error;
-        if (response && response.status === 401) {
-            // Nếu lỗi 401 (Unauthorized), xóa phiên làm việc và bắt đăng nhập lại
+        // 401: Token hết hạn / chưa đăng nhập
+        // 403: Token không hợp lệ (vd: server restart làm key thay đổi)
+        if (response && (response.status === 401 || response.status === 403)) {
             useAuthStore.getState().logout();
             window.location.href = '/login';
         }

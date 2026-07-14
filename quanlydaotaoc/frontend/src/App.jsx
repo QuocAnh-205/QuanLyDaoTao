@@ -21,6 +21,7 @@ import SystemConfigPage from './pages/SystemConfigPage';
 import CourseManagementPage from './pages/academic-management/CourseManagementPage';
 import AcademicManagementPage from './pages/academic-management/AcademicManagementPage';
 import TuitionManagementPage from './pages/finance/TuitionManagementPage';
+import GradeManagementPage from './pages/academic-management/GradeManagementPage';
 
 
 // Placeholder Components cho các Module chưa triển khai
@@ -65,7 +66,7 @@ function App() {
 
             <Route path="/registration" element={<Placeholder title="Đăng ký học phần trực tuyến" />} />
             <Route path="/schedule" element={<Placeholder title="Thời khóa biểu & Lịch giảng dạy" />} />
-            <Route path="/grades" element={<Placeholder title="Quản lý Điểm & Kết quả học tập" />} />
+            <Route path="/grades" element={<GradeManagementPage />} />
             <Route path="/tuition" element={<TuitionManagementPage />} />
             <Route path="/finance" element={<Placeholder title="Học phí & Giao dịch tài chính" />} />
             <Route path="/exams" element={<Placeholder title="Khảo thí & Xét tốt nghiệp" />} />

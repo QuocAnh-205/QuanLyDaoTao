@@ -16,6 +16,8 @@ import uni.it.stdmanager.modules.i_auth.repository.UserRepository;
 import uni.it.stdmanager.modules.i_auth.repository.UserRoleRepository;
 import uni.it.stdmanager.modules.i_auth.repository.RoleRepository;
 import org.springframework.transaction.annotation.Transactional; // Thêm import này
+import uni.it.stdmanager.modules.ii_student.entity.Student;
+import uni.it.stdmanager.modules.ii_student.repository.StudentRepository;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final StudentRepository studentRepository;
 
     @Override
     public AuthenticationResponse login(LoginRequest request) {
@@ -105,6 +108,9 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã được sử dụng");
         }
+        if (studentRepository.existsByStudentCode(request.getUsername())) {
+            throw new RuntimeException("Mã số sinh viên đã tồn tại");
+        }
 
         User user = User.builder()
                 .username(request.getUsername())
@@ -126,6 +132,15 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         userRoleRepository.save(userRole);
+
+        // Tạo hồ sơ Sinh viên tương ứng liên kết với User
+        Student student = Student.builder()
+                .user(user)
+                .studentCode(user.getUsername())
+                .fullName(user.getFullName())
+                .build();
+        student.setIsActive(true);
+        studentRepository.save(student);
     }
 
     @Override
