@@ -16,6 +16,7 @@ import LecturerManagementPage from './pages/lecturers/LecturerManagementPage';
 import ProfilePage from './pages/ProfilePage';
 import ERDiagramView from './pages/ERDiagramView';
 import SystemConfigPage from './pages/SystemConfigPage';
+import UserManagementPage from './pages/UserManagementPage';
 
 // Modules IV & V
 import CourseManagementPage from './pages/academic-management/CourseManagementPage';
@@ -56,7 +57,7 @@ function App() {
             <Route path="/er-diagram" element={<ERDiagramView />} />
 
             {/* Đăng ký các Route tương ứng với menuConfig.js */}
-            <Route path="/users" element={<Placeholder title="Quản trị Người dùng & Phân quyền" />} />
+            <Route path="/users" element={<UserManagementPage />} />
             <Route path="/students" element={<StudentListPage />} />
             <Route path="/student-classes" element={<ClassHierarchyPage />} />
             <Route path="/lecturers" element={<LecturerManagementPage />} />

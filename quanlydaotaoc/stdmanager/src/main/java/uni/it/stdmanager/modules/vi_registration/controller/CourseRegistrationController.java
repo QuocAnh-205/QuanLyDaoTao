@@ -29,6 +29,23 @@ public class CourseRegistrationController {
         return ApiResponse.success(courseRegistrationService.register(request), "Đăng ký môn học thành công");
     }
 
+    @PostMapping("/admin-enroll")
+    @PreAuthorize("hasAnyRole('GIAOVU', 'ADMIN')")
+    @Operation(summary = "Đăng ký thủ công sinh viên vào lớp học phần (Admin/Giáo vụ)")
+    public ApiResponse<CourseRegistrationResponse> adminEnroll(@RequestParam java.util.UUID studentId, @RequestParam java.util.UUID courseSectionId) {
+        return ApiResponse.success(courseRegistrationService.adminEnroll(studentId, courseSectionId), "Đăng ký sinh viên vào lớp học phần thành công");
+    }
+
+    @PostMapping("/admin-enroll-by-info")
+    @PreAuthorize("hasAnyRole('GIAOVU', 'ADMIN')")
+    @Operation(summary = "Nhập sinh viên trực tiếp vào lớp học phần (Tạo mới nếu chưa có)")
+    public ApiResponse<CourseRegistrationResponse> adminEnrollByInfo(
+            @RequestParam String studentCode,
+            @RequestParam String fullName,
+            @RequestParam java.util.UUID courseSectionId) {
+        return ApiResponse.success(courseRegistrationService.adminEnrollByInfo(studentCode, fullName, courseSectionId), "Nhập sinh viên vào lớp học phần thành công");
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('SINHVIEN', 'GIAOVU', 'ADMIN')")
     @Operation(summary = "Hủy đăng ký môn học")
@@ -41,13 +58,15 @@ public class CourseRegistrationController {
     @PreAuthorize("hasAnyRole('SINHVIEN', 'GIAOVU', 'ADMIN')")
     @Operation(summary = "Lấy danh sách đăng ký của một sinh viên")
     public ApiResponse<List<CourseRegistrationResponse>> getByStudent(@PathVariable UUID studentId) {
-        return ApiResponse.success(courseRegistrationService.getByStudent(studentId), "Lấy danh sách đăng ký của sinh viên thành công");
+        return ApiResponse.success(courseRegistrationService.getByStudent(studentId),
+                "Lấy danh sách đăng ký của sinh viên thành công");
     }
 
     @GetMapping("/section/{sectionId}")
     @PreAuthorize("hasAnyRole('GIANGVIEN', 'GIAOVU', 'ADMIN')")
     @Operation(summary = "Lấy danh sách đăng ký của một lớp học phần")
     public ApiResponse<List<CourseRegistrationResponse>> getBySection(@PathVariable UUID sectionId) {
-        return ApiResponse.success(courseRegistrationService.getBySection(sectionId), "Lấy danh sách đăng ký của lớp học phần thành công");
+        return ApiResponse.success(courseRegistrationService.getBySection(sectionId),
+                "Lấy danh sách đăng ký của lớp học phần thành công");
     }
 }

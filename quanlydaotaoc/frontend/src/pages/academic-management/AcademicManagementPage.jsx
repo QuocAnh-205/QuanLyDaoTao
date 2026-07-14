@@ -61,7 +61,7 @@ const AcademicManagementPage = () => {
                 }
             }
         } catch (error) {
-            toast.error("Protocol Error: Cannot fetch semester cycles");
+            toast.error("Lỗi hệ thống: Không thể tải danh sách học kỳ");
         } finally {
             setLoadingSemesters(false);
         }
@@ -75,7 +75,7 @@ const AcademicManagementPage = () => {
                 setSections(res.data);
             }
         } catch (error) {
-            toast.error("Protocol Error: Section retrieval failed");
+            toast.error("Lỗi hệ thống: Không thể tải danh sách lớp học phần");
         } finally {
             setLoadingSections(false);
         }
@@ -94,23 +94,23 @@ const AcademicManagementPage = () => {
 
     const handleDeleteSemester = async (id, e) => {
         e.stopPropagation();
-        if (window.confirm("CRITICAL WARNING: Purging a semester will dismantle all linked course sections. Confirm protocol?")) {
+        if (window.confirm("CẢNH BÁO QUAN TRỌNG: Xóa một học kỳ sẽ loại bỏ toàn bộ các lớp học phần liên kết. Bạn có chắc chắn muốn tiếp tục?")) {
             try {
                 const res = await semesterApi.deleteSemester(id);
                 if (res.success) {
-                    toast.success("Semester Cycle Purged");
+                    toast.success("Đã xóa kỳ học thành công");
                     if (selectedSemester?.id === id) setSelectedSemester(null);
                     fetchSemesters();
                 }
             } catch (error) {
-                toast.error("Operation Denied: Active dependencies detected");
+                toast.error("Thao tác bị từ chối: Phát hiện các ràng buộc đang hoạt động");
             }
         }
     };
 
     const handleAddSection = () => {
         if (!selectedSemester) {
-            toast.error("Initialization Required: Select an active semester first");
+            toast.error("Yêu cầu khởi tạo: Vui lòng chọn một học kỳ hoạt động trước");
             return;
         }
         setSelectedSectionForEdit(null);
@@ -134,13 +134,13 @@ const AcademicManagementPage = () => {
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-[0.3em]">
                         <Activity size={14} className="animate-pulse" />
-                        Strategic Core Operations
+                        Hoạt động đào tạo cốt lõi
                     </div>
                     <h1 className="text-5xl font-black text-slate-900 tracking-tighter flex items-center gap-4">
-                        Academic <span className="academic-text-gradient">Management</span>
+                        Quản lý <span className="academic-text-gradient">Đào tạo</span>
                     </h1>
                     <p className="text-slate-400 font-bold text-xs uppercase tracking-widest max-w-xl">
-                        Deploy and monitor knowledge matrices across active academic cycles.
+                        Phân phối và theo dõi các chương trình giảng dạy trong các kỳ học hiện hành.
                     </p>
                 </div>
                 
@@ -157,7 +157,7 @@ const AcademicManagementPage = () => {
                         <div className="h-10 w-px bg-slate-100"></div>
                         <div className="flex flex-col">
                             <span className="text-2xl font-black text-slate-900 leading-none">{semesters.length}</span>
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Total Cycles</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Tổng số kỳ học</span>
                         </div>
                     </div>
                 </div>
@@ -171,9 +171,9 @@ const AcademicManagementPage = () => {
                             <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
                             <div className="relative z-10">
                                 <h3 className="text-white font-black text-sm uppercase tracking-widest flex items-center gap-3">
-                                    <Database size={18} className="text-emerald-500" /> Registry
+                                    <Database size={18} className="text-emerald-500" /> Danh mục học kỳ
                                 </h3>
-                                <p className="text-emerald-500/40 text-[9px] font-black uppercase tracking-[0.25em] mt-1">Operational Scopes</p>
+                                <p className="text-emerald-500/40 text-[9px] font-black uppercase tracking-[0.25em] mt-1">Học kỳ hoạt động</p>
                             </div>
                             {canManage && (
                                 <button 
@@ -232,8 +232,8 @@ const AcademicManagementPage = () => {
                                 <Info size={24} />
                             </div>
                             <div>
-                                <h4 className="text-[10px] font-black text-emerald-800 uppercase tracking-[0.2em] mb-1">Operational Guard</h4>
-                                <p className="text-xs font-bold text-slate-600 leading-relaxed italic">Scopes are isolated per cycle to maintain data integrity across the matrix.</p>
+                                <h4 className="text-[10px] font-black text-emerald-800 uppercase tracking-[0.2em] mb-1">Nguyên tắc nghiệp vụ</h4>
+                                <p className="text-xs font-bold text-slate-600 leading-relaxed italic">Dữ liệu đào tạo được cách ly theo từng kỳ học nhằm đảm bảo tính toàn vẹn thông tin của hệ thống.</p>
                             </div>
                         </div>
                     </div>
@@ -248,7 +248,7 @@ const AcademicManagementPage = () => {
                             </div>
                             <div>
                                 <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tighter">
-                                    Section Operations
+                                    Lớp học phần
                                     {selectedSemester && (
                                         <span className="text-emerald-500 font-black flex items-center gap-3">
                                             <div className="w-1.5 h-6 bg-slate-200 rounded-full"></div>
@@ -256,7 +256,7 @@ const AcademicManagementPage = () => {
                                         </span>
                                     )}
                                 </h2>
-                                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Live Deployment Matrix</p>
+                                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Danh sách lớp học phần hiện hành</p>
                             </div>
                         </div>
 
@@ -266,7 +266,7 @@ const AcademicManagementPage = () => {
                                 className="px-8 py-4 bg-slate-900 hover:bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all shadow-2xl shadow-slate-900/30 flex items-center gap-3 active:scale-95 group"
                             >
                                 <Plus size={18} className="group-hover:rotate-90 transition-transform" /> 
-                                Deploy Matrix
+                                Mở lớp học phần
                             </button>
                         )}
                     </div>
@@ -274,7 +274,7 @@ const AcademicManagementPage = () => {
                     {loadingSections ? (
                         <div className="flex flex-col items-center justify-center py-40 bg-white rounded-[3rem] border border-slate-100 shadow-xl">
                             <Loader2 size={48} className="animate-spin mb-6 text-emerald-500" />
-                            <p className="font-black text-xs tracking-[0.4em] uppercase text-slate-300">Synchronizing Matrix Data...</p>
+                            <p className="font-black text-xs tracking-[0.4em] uppercase text-slate-300">Đang nạp dữ liệu lớp học phần...</p>
                         </div>
                     ) : sections.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -296,7 +296,7 @@ const AcademicManagementPage = () => {
                                                 ? 'bg-emerald-50 text-emerald-600 border-emerald-100 shadow-emerald-500/5' 
                                                 : 'bg-slate-50 text-slate-400 border-slate-100'
                                             }`}>
-                                                {section.status}
+                                                {section.status === 'open' ? 'MỞ ĐĂNG KÝ' : 'ĐÃ ĐÓNG'}
                                             </div>
                                         </div>
 
@@ -309,9 +309,9 @@ const AcademicManagementPage = () => {
                                                 <UserCircle size={32} />
                                             </div>
                                             <div className="flex-1 overflow-hidden">
-                                                <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-1">Matrix Commander</p>
-                                                <p className="text-sm font-black text-slate-800 truncate" title={section.lecturerName || 'Unassigned'}>
-                                                    {section.lecturerName || 'Unassigned'}
+                                                <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-1">Giảng viên phụ trách</p>
+                                                <p className="text-sm font-black text-slate-800 truncate" title={section.lecturerName || 'Chưa phân công'}>
+                                                    {section.lecturerName || 'Chưa phân công'}
                                                 </p>
                                             </div>
                                         </div>
@@ -320,7 +320,7 @@ const AcademicManagementPage = () => {
                                     <div className="mt-10 space-y-8 relative z-10">
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-end">
-                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Enrollment Payload</span>
+                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sĩ số sinh viên</span>
                                                 <span className="text-xs font-black text-slate-900 flex items-center gap-1.5">
                                                     {section.currentStudents} <div className="w-1 h-1 rounded-full bg-slate-300"></div> <span className="text-slate-400">{section.maxStudents}</span>
                                                 </span>
@@ -338,7 +338,7 @@ const AcademicManagementPage = () => {
                                                 onClick={() => handleViewDetail(section)}
                                                 className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm active:scale-95"
                                             >
-                                                Inspect Detail
+                                                Xem chi tiết
                                             </button>
                                             {canManage && (
                                                 <button 
@@ -358,14 +358,14 @@ const AcademicManagementPage = () => {
                             <div className="w-32 h-32 bg-slate-50 rounded-full flex items-center justify-center mb-10 shadow-inner">
                                 <List size={56} className="text-slate-200" />
                             </div>
-                            <h3 className="text-3xl font-black text-slate-800 tracking-tighter uppercase mb-4">Operational Void</h3>
-                            <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] max-w-xs text-center leading-relaxed">No knowledge matrices have been deployed for this cycle.</p>
+                            <h3 className="text-3xl font-black text-slate-800 tracking-tighter uppercase mb-4">Chưa mở lớp học phần</h3>
+                            <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] max-w-xs text-center leading-relaxed">Chưa có lớp học phần nào được mở trong kỳ học này.</p>
                             {canManage && (
                                 <button 
                                     onClick={handleAddSection} 
                                     className="mt-12 px-12 py-5 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black rounded-[2rem] text-xs uppercase tracking-widest transition-all shadow-2xl shadow-emerald-500/20 active:scale-95"
                                 >
-                                    Initiate Matrix Deployment
+                                    Mở lớp học phần mới
                                 </button>
                             )}
                         </div>
@@ -377,15 +377,15 @@ const AcademicManagementPage = () => {
                         <div className="flex items-center gap-10 relative z-10">
                             <div className="flex items-center gap-3">
                                 <ShieldCheck size={18} className="text-emerald-500" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Data Protocols Secured</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Giao thức dữ liệu an toàn</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Activity size={18} className="text-teal-400 animate-pulse" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Operational Pulse: Nominal</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Trạng thái hệ thống: Bình thường</span>
                             </div>
                         </div>
                         <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] relative z-10">
-                            Central Ops Terminal v4.0.5
+                            Cổng thông tin đào tạo v4.0.5
                         </div>
                     </div>
                 </main>

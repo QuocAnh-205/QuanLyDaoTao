@@ -168,7 +168,7 @@ const MainLayout = () => {
                             <Search size={18} className="text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
                             <input 
                                 type="text" 
-                                placeholder="Quick search Command..." 
+                                placeholder="Tìm kiếm nhanh..." 
                                 className="bg-transparent border-none outline-none text-sm font-bold text-slate-600 placeholder:text-slate-400 flex-1"
                             />
                             <div className="flex items-center gap-1 px-1.5 py-0.5 bg-white border border-slate-200 rounded-md shadow-sm">
@@ -183,7 +183,7 @@ const MainLayout = () => {
                             <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2 shadow-sm">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                                 <span className="text-emerald-700 font-black text-[10px] uppercase tracking-[0.15em]">
-                                    {user?.roles?.[0] || 'GUEST'}
+                                    {user?.roles?.[0] === 'ADMIN' ? 'QUẢN TRỊ VIÊN' : user?.roles?.[0] === 'GIAOVU' ? 'GIÁO VỤ' : user?.roles?.[0] === 'GIANGVIEN' ? 'GIẢNG VIÊN' : user?.roles?.[0] === 'SINHVIEN' ? 'SINH VIÊN' : 'KHÁCH'}
                                 </span>
                             </div>
                         </div>
@@ -290,7 +290,9 @@ const MainLayout = () => {
                                 </div>
                                 <div className="text-left hidden md:block">
                                     <p className="text-sm font-black text-slate-900 leading-none mb-1 group-hover:text-emerald-600 transition-colors">{user?.fullName}</p>
-                                    <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase opacity-60">ADMINISTRATOR</p>
+                                    <p className="text-[10px] text-slate-400 font-bold tracking-wider uppercase opacity-60">
+                                        {user?.roles?.[0] === 'ADMIN' ? 'QUẢN TRỊ VIÊN' : user?.roles?.[0] === 'GIAOVU' ? 'GIÁO VỤ' : user?.roles?.[0] === 'GIANGVIEN' ? 'GIẢNG VIÊN' : user?.roles?.[0] === 'SINHVIEN' ? 'SINH VIÊN' : 'KHÁCH'}
+                                    </p>
                                 </div>
                                 <ChevronDown size={16} className={`text-slate-400 transition-transform duration-300 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                             </button>
@@ -299,7 +301,7 @@ const MainLayout = () => {
                             {isUserMenuOpen && (
                                 <div className="absolute right-0 mt-4 w-64 bg-white/90 backdrop-blur-xl rounded-[1.5rem] shadow-2xl border border-slate-200/60 py-3 animate-slideUp z-50 overflow-hidden">
                                     <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-100 mb-2">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Identified Access</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Tài khoản đăng nhập</p>
                                         <p className="text-sm font-black text-slate-900 truncate">{user?.email}</p>
                                     </div>
 
@@ -311,7 +313,7 @@ const MainLayout = () => {
                                             <div className="p-2 bg-slate-50 group-hover/item:bg-white rounded-lg transition-colors">
                                                 <User size={18} className="text-slate-400 group-hover/item:text-emerald-500" />
                                             </div>
-                                            <span>Profile Matrix</span>
+                                            <span>Thông tin cá nhân</span>
                                         </button>
 
                                         <button 
@@ -321,7 +323,7 @@ const MainLayout = () => {
                                             <div className="p-2 bg-slate-50 group-hover/item:bg-white rounded-lg transition-colors">
                                                 <Settings size={18} className="text-slate-400 group-hover/item:text-emerald-500" />
                                             </div>
-                                            <span>System Config</span>
+                                            <span>Cấu hình hệ thống</span>
                                         </button>
                                     </div>
 
@@ -335,7 +337,7 @@ const MainLayout = () => {
                                             <div className="p-2 bg-rose-50 group-hover/item:bg-white rounded-lg transition-colors">
                                                 <LogOut size={18} />
                                             </div>
-                                            <span>Deauthorize</span>
+                                            <span>Đăng xuất</span>
                                         </button>
                                     </div>
                                 </div>

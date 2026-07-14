@@ -36,7 +36,7 @@ const ProfilePage = () => {
         } catch (error) {
             console.error(error);
             setError(true);
-            toast.error("Protocol Error: Identity synchronization failed");
+            toast.error("Lỗi kết nối: Đồng bộ thông tin cá nhân thất bại");
         } finally {
             setLoading(false);
         }
@@ -50,11 +50,11 @@ const ProfilePage = () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const loadingToast = toast.loading("Uploading Bio-Identification Artifact...");
+        const loadingToast = toast.loading("Đang tải ảnh đại diện lên hệ thống...");
         try {
             const res = await profileApi.updateAvatar(file);
             if (res.success) {
-                toast.success("Identity Avatar Formalized", { id: loadingToast });
+                toast.success("Cập nhật ảnh đại diện thành công", { id: loadingToast });
                 const updatedProfile = { ...profile, avatarUrl: res.data };
                 setProfile(updatedProfile);
 
@@ -64,7 +64,7 @@ const ProfilePage = () => {
                 });
             }
         } catch (error) {
-            toast.error("Upload Protocol Failure", { id: loadingToast });
+            toast.error("Lỗi khi tải ảnh đại diện lên", { id: loadingToast });
         }
     };
 
@@ -81,7 +81,7 @@ const ProfilePage = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
                 <Loader2 size={40} className="animate-spin text-emerald-500" />
-                <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Syncing Personal Data Matrix...</p>
+                <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Đang nạp thông tin cá nhân...</p>
             </div>
         );
     }
@@ -92,13 +92,13 @@ const ProfilePage = () => {
                 <div className="w-20 h-20 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 mb-6 border border-rose-100 shadow-inner">
                     <User size={32} />
                 </div>
-                <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-tight">Identity Retrieval Failure</h3>
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-8 max-w-xs">Critical error in synchronizing personal identity artifact.</p>
+                <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-tight">Tải thông tin thất bại</h3>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-8 max-w-xs">Đã xảy ra lỗi đồng bộ hóa hồ sơ tài khoản.</p>
                 <button
                     onClick={fetchProfile}
                     className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-95"
                 >
-                    Retry Protocol
+                    Thử lại
                 </button>
             </div>
         );
@@ -120,7 +120,7 @@ const ProfilePage = () => {
                         onClick={() => setIsEditModalOpen(true)}
                         className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white text-[10px] font-black rounded-2xl hover:bg-emerald-600 transition-all shadow-2xl shadow-slate-900/20 active:scale-95 uppercase tracking-[0.2em]"
                     >
-                        <Edit3 size={14} /> Update Identity
+                        <Edit3 size={14} /> Cập nhật hồ sơ
                     </button>
                 </div>
 
@@ -155,7 +155,7 @@ const ProfilePage = () => {
                         <div className="flex gap-2 justify-center md:justify-start">
                             {profile.roles.map(role => (
                                 <span key={role} className="bg-emerald-50 text-emerald-600 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-100 shadow-sm">
-                                    {role}
+                                    {role === 'ADMIN' ? 'QUẢN TRỊ VIÊN' : role === 'GIAOVU' ? 'GIÁO VỤ' : role === 'GIANGVIEN' ? 'GIẢNG VIÊN' : role === 'SINHVIEN' ? 'SINH VIÊN' : role}
                                 </span>
                             ))}
                         </div>
@@ -171,8 +171,8 @@ const ProfilePage = () => {
                                 <Mail size={18} />
                             </div>
                             <div className="text-left">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Protocol Email</p>
-                                <p className="text-sm font-black text-slate-700 truncate">{profile.email || 'NOT_DEFINED'}</p>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Địa chỉ Email</p>
+                                <p className="text-sm font-black text-slate-700 truncate">{profile.email || 'Chưa thiết lập'}</p>
                             </div>
                         </div>
                         <div className="flex items-center justify-center md:justify-start gap-4 p-4 bg-white/40 rounded-2xl border border-white/60 shadow-sm group/item hover:bg-white transition-all">
@@ -180,8 +180,8 @@ const ProfilePage = () => {
                                 <Phone size={18} />
                             </div>
                             <div className="text-left">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Comm Link</p>
-                                <p className="text-sm font-black text-slate-700 truncate">{profile.phone || 'NOT_DEFINED'}</p>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Số điện thoại</p>
+                                <p className="text-sm font-black text-slate-700 truncate">{profile.phone || 'Chưa thiết lập'}</p>
                             </div>
                         </div>
                     </div>
@@ -200,15 +200,15 @@ const ProfilePage = () => {
                             <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
                                 <Layout size={16} />
                             </div>
-                            Biological Specs
+                            Thông tin cơ bản
                         </h3>
 
                         <div className="grid grid-cols-1 gap-6 relative z-10">
-                            <DetailItem label="Assigned Gender" value={subProfile?.gender === '1' ? 'Male (Matrix A)' : subProfile?.gender === '2' ? 'Female (Matrix B)' : 'Other'} icon={<User size={18} />} />
-                            <DetailItem label="Manifestation Date" value={subProfile?.dateOfBirth || 'N/A'} icon={<Calendar size={18} />} />
-                            <DetailItem label="Localized Address" value={subProfile?.address || 'N/A'} icon={<MapPin size={18} />} />
+                            <DetailItem label="Giới tính" value={subProfile?.gender === '1' ? 'Nam' : subProfile?.gender === '2' ? 'Nữ' : 'Khác'} icon={<User size={18} />} />
+                            <DetailItem label="Ngày sinh" value={subProfile?.dateOfBirth || 'Chưa cập nhật'} icon={<Calendar size={18} />} />
+                            <DetailItem label="Địa chỉ thường trú" value={subProfile?.address || 'Chưa cập nhật'} icon={<MapPin size={18} />} />
                             {isStudent && (
-                                <DetailItem label="Identification Artifact" value={subProfile?.personalIdentificationNumber || 'N/A'} icon={<CreditCard size={18} />} />
+                                <DetailItem label="Số CMND / CCCD" value={subProfile?.personalIdentificationNumber || 'Chưa cập nhật'} icon={<CreditCard size={18} />} />
                             )}
                         </div>
                     </div>
@@ -218,10 +218,10 @@ const ProfilePage = () => {
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
                                 <Activity size={20} className="text-emerald-500 animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Security Clearance</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Trạng thái bảo mật</span>
                             </div>
-                            <h4 className="text-xl font-black mb-2 uppercase tracking-tight">Full System Access</h4>
-                            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest leading-relaxed italic">Identity verified and synchronized with Central University Operations Matrix.</p>
+                            <h4 className="text-xl font-black mb-2 uppercase tracking-tight">Quyền truy cập hợp lệ</h4>
+                            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest leading-relaxed italic">Tài khoản đã được xác minh trên hệ thống quản lý đào tạo.</p>
                         </div>
                     </div>
                 </div>
@@ -237,35 +237,35 @@ const ProfilePage = () => {
                                 <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 border border-teal-100">
                                     <Shield size={16} />
                                 </div>
-                                {isStudent ? 'Academic Architecture' : 'Operational Architecture'}
+                                {isStudent ? 'Thông tin học tập' : 'Thông tin công tác'}
                             </h3>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm animate-pulse">
-                                <Globe size={12} /> Matrix Verified
+                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm">
+                                <Globe size={12} /> Đã xác minh
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 relative z-10">
                             {isStudent ? (
                                 <>
-                                    <DetailItem label="Entity Code" value={subProfile.studentCode} icon={<Award size={18} />} highlight />
-                                    <DetailItem label="Deployment Unit" value={subProfile.className} icon={<Layout size={18} />} />
-                                    <DetailItem label="Governing Faculty" value={subProfile.departmentName} icon={<Briefcase size={18} />} />
-                                    <DetailItem label="Knowledge Path" value={subProfile.majorName} icon={<BookOpen size={18} />} />
-                                    <DetailItem label="Staging Cycle" value={subProfile.admissionYear} icon={<Calendar size={18} />} />
-                                    <DetailItem label="Operational Status" value={subProfile.statusName} icon={<Activity size={18} />} />
+                                    <DetailItem label="Mã sinh viên" value={subProfile.studentCode} icon={<Award size={18} />} highlight />
+                                    <DetailItem label="Lớp sinh hoạt" value={subProfile.className} icon={<Layout size={18} />} />
+                                    <DetailItem label="Khoa chủ quản" value={subProfile.departmentName} icon={<Briefcase size={18} />} />
+                                    <DetailItem label="Chuyên ngành" value={subProfile.majorName} icon={<BookOpen size={18} />} />
+                                    <DetailItem label="Khóa tuyển sinh" value={subProfile.admissionYear} icon={<Calendar size={18} />} />
+                                    <DetailItem label="Trạng thái học tập" value={subProfile.statusName} icon={<Activity size={18} />} />
                                 </>
                             ) : isEmployee ? (
                                 <>
-                                    <DetailItem label="Personnel ID" value={subProfile.employeeCode} icon={<Award size={18} />} highlight />
-                                    <DetailItem label="Strategic Unit" value={subProfile.departmentName} icon={<Briefcase size={18} />} />
-                                    <DetailItem label="Protocol Rank" value={subProfile.positionName} icon={<Shield size={18} />} />
-                                    <DetailItem label="Academic Mastery" value={subProfile.academicDegree} icon={<Award size={18} />} />
-                                    <DetailItem label="Matrix Specialty" value={subProfile.specialization} icon={<BookOpen size={18} />} />
-                                    <DetailItem label="Commission Date" value={subProfile.hireDate} icon={<Calendar size={18} />} />
+                                    <DetailItem label="Mã nhân viên" value={subProfile.employeeCode} icon={<Award size={18} />} highlight />
+                                    <DetailItem label="Đơn vị khoa / phòng" value={subProfile.departmentName} icon={<Briefcase size={18} />} />
+                                    <DetailItem label="Chức vụ" value={subProfile.positionName} icon={<Shield size={18} />} />
+                                    <DetailItem label="Học vị" value={subProfile.academicDegree} icon={<Award size={18} />} />
+                                    <DetailItem label="Chuyên môn sâu" value={subProfile.specialization} icon={<BookOpen size={18} />} />
+                                    <DetailItem label="Ngày nhận công tác" value={subProfile.hireDate} icon={<Calendar size={18} />} />
                                 </>
                             ) : (
                                 <div className="col-span-2 py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest italic">Identity Artifact Mapping Required</p>
+                                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest italic">Yêu cầu liên kết hồ sơ thông tin</p>
                                 </div>
                             )}
                         </div>
@@ -277,8 +277,8 @@ const ProfilePage = () => {
                                         <GraduationCap size={32} />
                                     </div>
                                     <div>
-                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Progress Vector</h4>
-                                        <p className="text-sm font-black text-slate-800 leading-tight">Identity verified for active semester registration cycles.</p>
+                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tiến trình học tập</h4>
+                                        <p className="text-sm font-black text-slate-800 leading-tight">Hồ sơ hợp lệ cho các kỳ đăng ký học phần kế tiếp.</p>
                                     </div>
                                 </div>
                             </div>
@@ -309,7 +309,7 @@ const DetailItem = ({ label, value, icon, highlight }) => (
         <div>
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 group-hover:text-emerald-600 transition-colors">{label}</p>
             <p className={`text-sm font-black tracking-tight ${highlight ? 'text-slate-900 text-base' : 'text-slate-700'}`}>
-                {value || 'PROTOCOL_NULL'}
+                {value || 'Chưa thiết lập'}
             </p>
         </div>
     </div>

@@ -13,6 +13,8 @@ const registrationApi = {
     cancelRegistration: (id) => axiosClient.delete(`/course-registrations/${id}`),
     getStudentRegistrations: (studentId) => axiosClient.get(`/course-registrations/student/${studentId}`),
     getSectionRegistrations: (sectionId) => axiosClient.get(`/course-registrations/section/${sectionId}`),
+    adminEnroll: (studentId, courseSectionId) => axiosClient.post(`/course-registrations/admin-enroll?studentId=${studentId}&courseSectionId=${courseSectionId}`),
+    adminEnrollByInfo: (studentCode, fullName, courseSectionId) => axiosClient.post(`/course-registrations/admin-enroll-by-info?studentCode=${studentCode}&fullName=${fullName}&courseSectionId=${courseSectionId}`),
 
     // Equivalent Courses
     getEquivalentCourses: () => axiosClient.get("/equivalent-courses"),

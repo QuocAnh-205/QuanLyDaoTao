@@ -34,7 +34,7 @@ const ERDiagramView = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-10">
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">University DB Schema Overview</h1>
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">Tổng quan lược đồ cơ sở dữ liệu</h1>
                     <p className="text-slate-500 mt-2 font-medium">Hệ thống stdmanager | SQL Server | 13 Nhóm chức năng | 60+ Bảng dữ liệu</p>
                     <div className="flex justify-center gap-4 mt-4">
                         <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full border border-indigo-200">
@@ -58,7 +58,7 @@ const ERDiagramView = () => {
                         >
                             {!group.implemented && (
                                 <div className="absolute inset-0 flex items-center justify-center z-10">
-                                    <span className="bg-slate-800/80 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter">Planned</span>
+                                    <span className="bg-slate-800/80 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter">Kế hoạch</span>
                                 </div>
                             )}
 
@@ -69,7 +69,7 @@ const ERDiagramView = () => {
                                     </span>
                                     <h3 className="text-sm font-bold text-slate-800">{group.name}</h3>
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400">{group.count} tables</span>
+                                <span className="text-[10px] font-bold text-slate-400">{group.count} bảng</span>
                             </div>
 
                             <ul className="space-y-1.5">
@@ -94,15 +94,15 @@ const ERDiagramView = () => {
                         <span className="p-2 bg-indigo-500 rounded-xl">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         </span>
-                        Các mối quan hệ thực thể chính (FK)
+                        Mối quan hệ chính giữa các bảng (Khóa ngoại FK)
                     </h2>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {mainRelations.map((rel, i) => (
                             <div key={i} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 backdrop-blur-sm">
                                 <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-2 uppercase tracking-tighter">
-                                    <span>From</span>
-                                    <span>To</span>
+                                    <span>Từ</span>
+                                    <span>Đến</span>
                                 </div>
                                 <div className="flex items-center justify-between font-bold text-xs">
                                     <span className="text-indigo-400">{rel.from}</span>
@@ -110,7 +110,7 @@ const ERDiagramView = () => {
                                     <span className="text-amber-400">{rel.to}</span>
                                 </div>
                                 <div className="mt-3 pt-3 border-t border-slate-700 text-[10px] text-slate-500 italic">
-                                    via {rel.via}
+                                    qua {rel.via}
                                 </div>
                             </div>
                         ))}

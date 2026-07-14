@@ -61,8 +61,8 @@ const SystemConfigPage = () => {
                 setSemesters(semesterRes.data);
             }
         } catch (error) {
-            console.error("Error loading system configuration matrix:", error);
-            toast.error("Protocol Error: Configuration matrix synchronization failed");
+            console.error("Lỗi nạp cấu hình hệ thống:", error);
+            toast.error("Lỗi giao thức: Đồng bộ cấu hình thất bại");
         } finally {
             setLoading(false);
         }
@@ -76,9 +76,9 @@ const SystemConfigPage = () => {
     };
 
     const handleSave = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setSaving(true);
-        const loadingToast = toast.loading("Formalizing configuration adjustments...");
+        const loadingToast = toast.loading("Đang áp dụng thay đổi cấu hình...");
         
         try {
             const payload = Object.keys(configs).map(key => ({
@@ -88,15 +88,15 @@ const SystemConfigPage = () => {
 
             const res = await systemConfigApi.saveConfigs(payload);
             if (res.success) {
-                toast.success("System configurations formalized successfully", { id: loadingToast });
+                toast.success("Đã lưu các thay đổi cấu hình hệ thống", { id: loadingToast });
                 // Re-sync
                 fetchData();
             } else {
-                toast.error("Adjustments rejected by validation authority", { id: loadingToast });
+                toast.error("Các thay đổi bị hệ thống từ chối áp dụng", { id: loadingToast });
             }
         } catch (error) {
-            console.error("Failed to commit configurations:", error);
-            toast.error("Commit Protocol Failure: Connection reset", { id: loadingToast });
+            console.error("Lỗi khi lưu cấu hình:", error);
+            toast.error("Không thể ghi cấu hình: Mất kết nối máy chủ", { id: loadingToast });
         } finally {
             setSaving(false);
         }
@@ -115,19 +115,19 @@ const SystemConfigPage = () => {
                     </div>
                     
                     <span className="bg-rose-50 text-rose-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border border-rose-100 shadow-sm inline-block mb-4">
-                        Access Protocol Violated
+                        Quyền truy cập bị từ chối
                     </span>
                     
-                    <h3 className="text-3xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-none">Security Exclusion 403</h3>
+                    <h3 className="text-3xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-none">Lỗi truy cập 403</h3>
                     <p className="text-slate-500 text-xs font-bold leading-relaxed mb-10 max-w-sm mx-auto tracking-normal">
-                        Your administrative authorization tier is insufficient to view or manipulate the Core System Configuration Matrix. Please contact the grid commander for operational clearance.
+                        Vai trò quản trị tài khoản của bạn chưa đủ để thực hiện xem hoặc điều chỉnh bảng cấu hình hệ thống. Vui lòng liên hệ Quản trị viên cao cấp.
                     </p>
                     
                     <button
                         onClick={() => window.history.back()}
                         className="px-8 py-3.5 bg-slate-900 hover:bg-rose-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 active:scale-95 duration-300"
                     >
-                        Return to Safe Sector
+                        Quay lại an toàn
                     </button>
                 </div>
             </div>
@@ -138,7 +138,7 @@ const SystemConfigPage = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
                 <Loader2 size={40} className="animate-spin text-emerald-500" />
-                <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Synchronizing Core Config Matrix...</p>
+                <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Đang nạp bảng dữ liệu cấu hình...</p>
             </div>
         );
     }
@@ -156,11 +156,11 @@ const SystemConfigPage = () => {
                     </div>
                     <div>
                         <span className="bg-emerald-50 text-emerald-600 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-100 shadow-sm inline-block mb-2">
-                            Grid Operations Hub
+                            Trung tâm vận hành
                         </span>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-none">System Config</h1>
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-none">Cấu hình hệ thống</h1>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.15em] mt-1.5 flex items-center gap-1.5">
-                            <ShieldCheck size={12} className="text-emerald-500" /> Operational Control Terminal
+                            <ShieldCheck size={12} className="text-emerald-500" /> Bảng điều khiển cấu hình hệ thống
                         </p>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ const SystemConfigPage = () => {
                     <button
                         onClick={fetchData}
                         className="p-4 text-slate-400 hover:text-slate-600 hover:bg-slate-50 border border-slate-100 hover:border-slate-200 rounded-2xl transition-all group bg-white shadow-sm"
-                        title="Re-sync configurations"
+                        title="Đồng bộ lại cấu hình"
                     >
                         <RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500" />
                     </button>
@@ -180,11 +180,11 @@ const SystemConfigPage = () => {
                     >
                         {saving ? (
                             <>
-                                <Loader2 size={14} className="animate-spin" /> Committing...
+                                <Loader2 size={14} className="animate-spin" /> Đang lưu...
                             </>
                         ) : (
                             <>
-                                <Save size={14} /> Commit Configs
+                                <Save size={14} /> Lưu cấu hình
                             </>
                         )}
                     </button>
@@ -199,21 +199,21 @@ const SystemConfigPage = () => {
                         <TabButton 
                             active={activeTab === 'general'} 
                             onClick={() => setActiveTab('general')}
-                            label="Core Systems"
+                            label="Cấu hình chung"
                             description="Tên, liên hệ, bảo trì"
                             icon={<Globe size={18} />}
                         />
                         <TabButton 
                             active={activeTab === 'academic'} 
                             onClick={() => setActiveTab('academic')}
-                            label="Academic Grid"
+                            label="Quy trình đào tạo"
                             description="Học kỳ, tín chỉ, đăng ký"
                             icon={<GraduationCap size={18} />}
                         />
                         <TabButton 
                             active={activeTab === 'financial'} 
                             onClick={() => setActiveTab('financial')}
-                            label="Financial Rates"
+                            label="Định mức học phí"
                             description="Học phí tín chỉ, tỷ giá"
                             icon={<DollarSign size={18} />}
                         />
@@ -224,11 +224,11 @@ const SystemConfigPage = () => {
                         <div className="relative z-10 space-y-3">
                             <div className="flex items-center gap-2">
                                 <Activity size={16} className="text-emerald-500 animate-pulse" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500">Live Grid Stats</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500">Khu vực bảo mật</span>
                             </div>
-                            <h4 className="text-sm font-black uppercase tracking-tight leading-none">Security Zone</h4>
+                            <h4 className="text-sm font-black uppercase tracking-tight leading-none">Cảnh báo vận hành</h4>
                             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
-                                Any adjustments to this configuration block will impact all staging environments instantly. Care is advised.
+                                Mọi thay đổi tại khu vực này sẽ áp dụng ngay lập tức cho toàn bộ các quy trình nghiệp vụ đào tạo. Hãy cẩn trọng.
                             </p>
                         </div>
                     </div>
@@ -246,7 +246,7 @@ const SystemConfigPage = () => {
                             <div className="space-y-8 animate-slideUp">
                                 <div>
                                     <h3 className="text-sm font-black text-slate-900 flex items-center gap-3 uppercase tracking-[0.2em] mb-1">
-                                        Core Systems Matrix
+                                        Thiết lập cấu hình chung
                                     </h3>
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Thiết lập tổng quan về định danh và thông tin hỗ trợ của hệ thống</p>
                                 </div>
@@ -291,7 +291,7 @@ const SystemConfigPage = () => {
                             <div className="space-y-8 animate-slideUp">
                                 <div>
                                     <h3 className="text-sm font-black text-slate-900 flex items-center gap-3 uppercase tracking-[0.2em] mb-1">
-                                        Academic Program Grid
+                                        Thiết lập quy trình học vụ
                                     </h3>
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Thiết lập học vụ, học kỳ hiện hành và luật đăng ký môn học</p>
                                 </div>
@@ -343,7 +343,7 @@ const SystemConfigPage = () => {
                             <div className="space-y-8 animate-slideUp">
                                 <div>
                                     <h3 className="text-sm font-black text-slate-900 flex items-center gap-3 uppercase tracking-[0.2em] mb-1">
-                                        Financial Rates Matrix
+                                        Thiết lập định mức tài chính
                                     </h3>
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Thiết lập đơn giá học phí trên đơn vị tín chỉ</p>
                                 </div>

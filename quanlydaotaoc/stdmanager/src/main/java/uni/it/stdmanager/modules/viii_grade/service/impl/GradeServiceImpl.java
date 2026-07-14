@@ -69,7 +69,8 @@ public class GradeServiceImpl implements GradeService {
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (totalWeight.compareTo(new BigDecimal("100.00")) != 0 && totalWeight.compareTo(new BigDecimal("1.00")) != 0) {
+        if (totalWeight.compareTo(new BigDecimal("100.00")) != 0
+                && totalWeight.compareTo(new BigDecimal("1.00")) != 0) {
             // Support both 100% (e.g. 30.00) or 1.0 (e.g. 0.3)
             if (totalWeight.compareTo(new BigDecimal("100")) != 0) {
                 throw new RuntimeException("Tổng trọng số của các điểm thành phần phải bằng 100%");
@@ -119,7 +120,8 @@ public class GradeServiceImpl implements GradeService {
     @Override
     public List<StudentGradeDetailResponse> getStudentGrades(UUID sectionId) {
         List<CourseRegistration> registrations = courseRegistrationRepository.findAllByCourseSectionId(sectionId);
-        List<GradeComponent> components = gradeComponentRepository.findAllByCourseSectionIdAndIsActiveTrueOrderByInputOrderAsc(sectionId);
+        List<GradeComponent> components = gradeComponentRepository
+                .findAllByCourseSectionIdAndIsActiveTrueOrderByInputOrderAsc(sectionId);
 
         List<StudentGradeDetailResponse> results = new ArrayList<>();
 
@@ -128,7 +130,8 @@ public class GradeServiceImpl implements GradeService {
                 continue; // Skip cancelled registrations
             }
 
-            List<StudentComponentGrade> compGrades = studentComponentGradeRepository.findAllByRegistrationIdAndIsActiveTrue(reg.getId());
+            List<StudentComponentGrade> compGrades = studentComponentGradeRepository
+                    .findAllByRegistrationIdAndIsActiveTrue(reg.getId());
             Map<UUID, StudentComponentGrade> gradeMap = compGrades.stream()
                     .collect(Collectors.toMap(cg -> cg.getGradeComponent().getId(), cg -> cg));
 
@@ -168,17 +171,20 @@ public class GradeServiceImpl implements GradeService {
     @Override
     @Transactional
     public void submitGrades(UUID sectionId, BulkSubmitGradesRequest request, UUID graderId) {
-        List<GradeComponent> components = gradeComponentRepository.findAllByCourseSectionIdAndIsActiveTrueOrderByInputOrderAsc(sectionId);
+        List<GradeComponent> components = gradeComponentRepository
+                .findAllByCourseSectionIdAndIsActiveTrueOrderByInputOrderAsc(sectionId);
         Map<UUID, GradeComponent> componentMap = components.stream()
                 .collect(Collectors.toMap(GradeComponent::getId, c -> c));
 
         for (SubmitGradesRequest sub : request.getSubmissions()) {
             CourseRegistration reg = courseRegistrationRepository.findById(sub.getRegistrationId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin đăng ký: " + sub.getRegistrationId()));
+                    .orElseThrow(
+                            () -> new RuntimeException("Không tìm thấy thông tin đăng ký: " + sub.getRegistrationId()));
 
             Optional<StudentSummary> summaryOpt = studentSummaryRepository.findByRegistrationId(reg.getId());
             if (summaryOpt.isPresent() && summaryOpt.get().getIsFinalized()) {
-                throw new RuntimeException("Bảng điểm của sinh viên " + reg.getStudent().getFullName() + " đã được khóa, không thể chỉnh sửa.");
+                throw new RuntimeException("Bảng điểm của sinh viên " + reg.getStudent().getFullName()
+                        + " đã được khóa, không thể chỉnh sửa.");
             }
 
             List<StudentComponentGrade> gradesToSave = new ArrayList<>();
@@ -186,10 +192,12 @@ public class GradeServiceImpl implements GradeService {
 
             for (StudentComponentGradeInput input : sub.getGrades()) {
                 GradeComponent comp = componentMap.get(input.getComponentId());
-                if (comp == null) continue;
+                if (comp == null)
+                    continue;
 
                 if (input.getScore() != null) {
-                    if (input.getScore().compareTo(BigDecimal.ZERO) < 0 || input.getScore().compareTo(new BigDecimal("10.00")) > 0) {
+                    if (input.getScore().compareTo(BigDecimal.ZERO) < 0
+                            || input.getScore().compareTo(new BigDecimal("10.00")) > 0) {
                         throw new RuntimeException("Điểm số phải nằm trong khoảng từ 0 đến 10.");
                     }
                 }
@@ -218,68 +226,74 @@ public class GradeServiceImpl implements GradeService {
 
             studentComponentGradeRepository.saveAll(gradesToSave);
 
-            // If finalize is checked, calculate summaries
-            if (request.getFinalize()) {
-                boolean allGradesEntered = true;
-                BigDecimal totalScore = BigDecimal.ZERO;
+            // Calculate summaries (totalScore, letterGrade, gpaValue) if all grades are entered, even for draft saves
+            boolean allGradesEntered = true;
+            BigDecimal totalScore = BigDecimal.ZERO;
 
-                for (GradeComponent comp : components) {
-                    BigDecimal score = scores.get(comp.getId());
-                    if (score == null) {
-                        // Look up in database if not submitted in this request
-                        Optional<StudentComponentGrade> dbGrade = studentComponentGradeRepository
-                                .findByRegistrationIdAndGradeComponentIdAndIsActiveTrue(reg.getId(), comp.getId());
-                        if (dbGrade.isPresent() && dbGrade.get().getScore() != null) {
-                            score = dbGrade.get().getScore();
-                        }
+            for (GradeComponent comp : components) {
+                BigDecimal score = scores.get(comp.getId());
+                if (score == null) {
+                    // Look up in database if not submitted in this request
+                    Optional<StudentComponentGrade> dbGrade = studentComponentGradeRepository
+                            .findByRegistrationIdAndGradeComponentIdAndIsActiveTrue(reg.getId(), comp.getId());
+                    if (dbGrade.isPresent() && dbGrade.get().getScore() != null) {
+                        score = dbGrade.get().getScore();
                     }
-
-                    if (score == null) {
-                        allGradesEntered = false;
-                        break;
-                    }
-
-                    BigDecimal weight = comp.getWeightPercentage();
-                    if (weight.compareTo(BigDecimal.ONE) <= 0) {
-                        weight = weight.multiply(new BigDecimal("100")); // normalized 0.3 -> 30
-                    }
-
-                    totalScore = totalScore.add(score.multiply(weight));
                 }
 
-                if (allGradesEntered) {
-                    totalScore = totalScore.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                if (score == null) {
+                    allGradesEntered = false;
+                    break;
+                }
 
-                    // Find scale
-                    final BigDecimal finalScore = totalScore;
-                    GradeScale scale = gradeScaleRepository.findScaleForScore(finalScore)
-                            .orElseThrow(() -> new RuntimeException("Không tìm thấy thang điểm quy đổi cho điểm số: " + finalScore));
+                BigDecimal weight = comp.getWeightPercentage();
+                if (weight.compareTo(BigDecimal.ONE) <= 0) {
+                    weight = weight.multiply(new BigDecimal("100")); // normalized 0.3 -> 30
+                }
 
-                    StudentSummary summary = summaryOpt.orElseGet(() -> StudentSummary.builder()
-                            .registration(reg)
-                            .build());
+                totalScore = totalScore.add(score.multiply(weight));
+            }
 
-                    summary.setTotalScore(totalScore);
-                    summary.setGradeScale(scale);
-                    summary.setLetterGrade(scale.getLetterGrade());
-                    summary.setGpaValue(scale.getGpaValue());
-                    summary.setResult(scale.getIsPass() ? "PASS" : "FAIL");
-                    summary.setIsFinalized(true);
-                    summary.setIsActive(true);
+            if (allGradesEntered) {
+                totalScore = totalScore.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
-                    studentSummaryRepository.save(summary);
+                // Find scale
+                final BigDecimal finalScore = totalScore;
+                GradeScale scale = gradeScaleRepository.findScaleForScore(finalScore)
+                        .orElseThrow(() -> new RuntimeException(
+                                "Không tìm thấy thang điểm quy đổi cho điểm số: " + finalScore));
 
-                    // Sync with student_course_sections if exists
-                    List<StudentCourseSection> syncSections = studentCourseSectionRepository
-                            .findAllByStudentId(reg.getStudent().getId());
-                    for (StudentCourseSection scs : syncSections) {
-                        if (scs.getCourseSection().getId().equals(reg.getCourseSection().getId())) {
-                            scs.setGradePoint(scale.getGpaValue());
-                            scs.setGradeChar(scale.getLetterGrade());
+                StudentSummary summary = summaryOpt.orElseGet(() -> StudentSummary.builder()
+                        .registration(reg)
+                        .build());
+
+                summary.setTotalScore(totalScore);
+                summary.setGradeScale(scale);
+                summary.setLetterGrade(scale.getLetterGrade());
+                summary.setGpaValue(scale.getGpaValue());
+                summary.setResult(scale.getIsPass() ? "PASS" : "FAIL");
+                summary.setIsFinalized(request.getFinalize());
+                summary.setIsActive(true);
+
+                studentSummaryRepository.save(summary);
+
+                // Sync with student_course_sections if exists
+                List<StudentCourseSection> syncSections = studentCourseSectionRepository
+                        .findAllByStudentId(reg.getStudent().getId());
+                for (StudentCourseSection scs : syncSections) {
+                    if (scs.getCourseSection().getId().equals(reg.getCourseSection().getId())) {
+                        scs.setGradePoint(scale.getGpaValue());
+                        scs.setGradeChar(scale.getLetterGrade());
+                        if (request.getFinalize()) {
                             scs.setStatus("completed");
-                            studentCourseSectionRepository.save(scs);
                         }
+                        studentCourseSectionRepository.save(scs);
                     }
+                }
+            } else {
+                // If grades are not complete and there was an unfinalized draft summary, clear it
+                if (summaryOpt.isPresent() && !summaryOpt.get().getIsFinalized()) {
+                    studentSummaryRepository.delete(summaryOpt.get());
                 }
             }
         }
@@ -291,7 +305,8 @@ public class GradeServiceImpl implements GradeService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên"));
 
         List<CourseRegistration> registrations = courseRegistrationRepository.findAllByStudentId(studentId);
-        List<StudentSummary> summaries = studentSummaryRepository.findAllByRegistrationStudentIdAndIsActiveTrue(studentId);
+        List<StudentSummary> summaries = studentSummaryRepository
+                .findAllByRegistrationStudentIdAndIsActiveTrue(studentId);
 
         Map<UUID, StudentSummary> summaryMap = summaries.stream()
                 .collect(Collectors.toMap(s -> s.getRegistration().getId(), s -> s));

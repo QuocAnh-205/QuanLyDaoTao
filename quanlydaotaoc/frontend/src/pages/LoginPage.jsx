@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
 import { authApi } from '../api/authApi';
+import toast from 'react-hot-toast';
 import { 
     User, Lock, Eye, EyeOff, Award, GraduationCap, Users, 
     BookOpen, Globe, Phone, Mail, HelpCircle, Activity, Info, ShieldCheck
@@ -11,11 +12,8 @@ import {
 const LoginPage = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-    const [countdown, setCountdown] = useState(2);
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [pendingAuth, setPendingAuth] = useState(null);
     const [rememberMe, setRememberMe] = useState(false);
     const [showDemoAccounts, setShowDemoAccounts] = useState(false);
 
@@ -30,22 +28,6 @@ const LoginPage = () => {
             setRememberMe(true);
         }
     }, []);
-
-    // Success countdown hook
-    useEffect(() => {
-        let timer;
-        if (successMessage && countdown > 0) {
-            timer = setTimeout(() => {
-                setCountdown(prev => prev - 1);
-            }, 1000);
-        } else if (successMessage && countdown === 0) {
-            if (pendingAuth) {
-                setAuth(pendingAuth.token, pendingAuth.user);
-            }
-            navigate('/dashboard');
-        }
-        return () => clearTimeout(timer);
-    }, [successMessage, countdown, pendingAuth, setAuth, navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -94,13 +76,9 @@ const LoginPage = () => {
                     localStorage.removeItem('saved_username');
                 }
 
-                setPendingAuth({
-                    token: response.data.token,
-                    user: response.data.user
-                });
-
-                const displayUserName = response.data.user.fullName || response.data.user.username;
-                setSuccessMessage(`Chào mừng trở lại, ${displayUserName}! Đang đăng nhập hệ thống...`);
+                toast.success('Đăng nhập thành công!');
+                setAuth(response.data.token, response.data.user);
+                navigate('/dashboard');
             }
         } catch (err) {
             console.error('Lỗi đăng nhập:', err);
@@ -337,32 +315,18 @@ const LoginPage = () => {
                         {showDemoAccounts && (
                             <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-400 pt-2 border-t border-white/5 animate-in fade-in duration-200">
                                 <button
-                                    onClick={() => handleSelectDemoAccount('admin', 'UniItAdmin2026')}
+                                    onClick={() => handleSelectDemoAccount('admin', 'Admin@123')}
                                     className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition text-left border border-white/5"
                                 >
                                     <span className="block text-white">Quản trị viên</span>
                                     <span>admin / ...</span>
                                 </button>
                                 <button
-                                    onClick={() => handleSelectDemoAccount('giaovu', 'UniItAdmin2026')}
+                                    onClick={() => handleSelectDemoAccount('giaovu', 'Admin@123')}
                                     className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition text-left border border-white/5"
                                 >
                                     <span className="block text-white">Giáo vụ phòng</span>
                                     <span>giaovu / ...</span>
-                                </button>
-                                <button
-                                    onClick={() => handleSelectDemoAccount('giangvien', 'UniItAdmin2026')}
-                                    className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition text-left border border-white/5"
-                                >
-                                    <span className="block text-white">Giảng viên khoa</span>
-                                    <span>giangvien / ...</span>
-                                </button>
-                                <button
-                                    onClick={() => handleSelectDemoAccount('sv20200001', 'UniItAdmin2026')}
-                                    className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition text-left border border-white/5"
-                                >
-                                    <span className="block text-white">Sinh viên</span>
-                                    <span>sv20200001 / ...</span>
                                 </button>
                             </div>
                         )}
@@ -385,38 +349,6 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Success Modal */}
-            {successMessage && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 p-8 rounded-[2.5rem] shadow-[0_0_50px_rgba(16,185,129,0.2)] w-full max-w-md text-center relative overflow-hidden">
-                        <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-                        <div className="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-teal-500/10 blur-3xl pointer-events-none"></div>
-
-                        {/* Animated Checkmark icon */}
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-6 shadow-lg shadow-emerald-500/5">
-                            <ShieldCheck size={32} />
-                        </div>
-
-                        <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 mb-3">
-                            Đăng nhập thành công!
-                        </h3>
-                        <p className="text-slate-300 text-xs font-bold leading-relaxed px-4">
-                            {successMessage}
-                        </p>
-
-                        <div className="mt-8 space-y-4">
-                            <p className="text-slate-400 text-[10px] tracking-wider uppercase font-semibold">
-                                Đang tải giao diện trong <span className="text-emerald-400 font-bold text-sm animate-pulse">{countdown}</span> giây...
-                            </p>
-                            
-                            <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden relative">
-                                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full animate-progress-shrink"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

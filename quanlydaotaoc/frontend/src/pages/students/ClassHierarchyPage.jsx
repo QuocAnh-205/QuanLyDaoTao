@@ -98,13 +98,13 @@ const ClassHierarchyPage = () => {
                     <div className="absolute -left-4 top-0 bottom-0 w-1 bg-indigo-600 rounded-full"></div>
                     <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-[0.2em] mb-2 pl-2">
                         <Sparkles size={14} className="animate-pulse" />
-                        Academic Infrastructure
+                        Cấu trúc đào tạo
                     </div>
                     <h1 className="text-5xl font-black text-slate-900 tracking-tight pl-2">
-                        Class <span className="text-gradient">Registry</span>
+                        Quản lý <span className="text-gradient">Lớp học</span>
                     </h1>
                     <p className="text-slate-500 mt-2 font-medium pl-2 max-w-md">
-                        Explore and manage the university's academic structure through our high-performance explorer.
+                        Khám phá và quản lý cấu trúc cây đào tạo của trường đại học thông qua sơ đồ trực quan.
                     </p>
                 </div>
 
@@ -113,7 +113,7 @@ const ClassHierarchyPage = () => {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
                         <input 
                             type="text" 
-                            placeholder="Find departments, majors or classes..." 
+                            placeholder="Tìm kiếm khoa, chuyên ngành hoặc lớp sinh hoạt..." 
                             className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl text-slate-700 font-semibold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -125,10 +125,10 @@ const ClassHierarchyPage = () => {
             {/* Bento Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Departments', value: stats.totalDepts, icon: School, color: 'indigo', growth: '+2% from last term', bgClass: 'bg-indigo-500/10', textClass: 'text-indigo-600' },
-                    { label: 'Specializations', value: stats.totalMajors, icon: Target, color: 'emerald', growth: '3 new added', bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-600' },
-                    { label: 'Active Classes', value: stats.totalClasses, icon: LayoutGrid, color: 'amber', growth: 'Full capacity', bgClass: 'bg-amber-500/10', textClass: 'text-amber-600' },
-                    { label: 'Est. Enrollment', value: stats.totalStudents || '2.4k+', icon: Users, color: 'rose', growth: '+12% growth', bgClass: 'bg-rose-500/10', textClass: 'text-rose-600' }
+                    { label: 'Khoa đào tạo', value: stats.totalDepts, icon: School, color: 'indigo', growth: '+2% so với kỳ trước', bgClass: 'bg-indigo-500/10', textClass: 'text-indigo-600' },
+                    { label: 'Chuyên ngành', value: stats.totalMajors, icon: Target, color: 'emerald', growth: 'Thêm mới 3', bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-600' },
+                    { label: 'Lớp học hoạt động', value: stats.totalClasses, icon: LayoutGrid, color: 'amber', growth: 'Công suất tối đa', bgClass: 'bg-amber-500/10', textClass: 'text-amber-600' },
+                    { label: 'Sinh viên đăng ký', value: stats.totalStudents || '2.4k+', icon: Users, color: 'rose', growth: '+12% tăng trưởng', bgClass: 'bg-rose-500/10', textClass: 'text-rose-600' }
                 ].map((stat, idx) => (
                     <div key={idx} className="glass-card p-6 rounded-[2rem] border-white/40 hover:scale-[1.02] transition-all cursor-default">
                         <div className="flex items-start justify-between mb-4">
@@ -145,26 +145,27 @@ const ClassHierarchyPage = () => {
                 ))}
             </div>
 
+            {/* Hierarchy Explorer */}
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-32 text-slate-400">
                     <div className="relative">
                         <div className="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
                         <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-600" size={28} />
                     </div>
-                    <p className="mt-8 font-black text-slate-500 animate-pulse tracking-[0.3em] uppercase text-[10px]">Synchronizing Matrix...</p>
+                    <p className="mt-8 font-black text-slate-500 animate-pulse tracking-[0.3em] uppercase text-[10px]">Đang nạp ma trận lớp học...</p>
                 </div>
             ) : filteredHierarchy.length === 0 ? (
                 <div className="glass-card rounded-[3rem] p-32 text-center border-dashed border-2 border-slate-200">
                     <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 text-slate-300">
                         <Layers size={48} />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-800">System Empty</h3>
-                    <p className="text-slate-500 mt-2 font-medium">No entities matched your search parameters.</p>
+                    <h3 className="text-2xl font-black text-slate-800">Dữ liệu trống</h3>
+                    <p className="text-slate-500 mt-2 font-medium">Không tìm thấy bản ghi nào khớp với điều kiện tìm kiếm.</p>
                     <button 
                         onClick={() => setSearchTerm('')}
                         className="mt-8 px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"
                     >
-                        Reset Filters
+                        Đặt lại bộ lọc
                     </button>
                 </div>
             ) : (
@@ -195,7 +196,7 @@ const ClassHierarchyPage = () => {
                                         </div>
                                         <p className="text-slate-400 font-bold text-xs uppercase tracking-widest flex items-center justify-center md:justify-start gap-2">
                                             <MoreHorizontal size={14} className="text-indigo-400" />
-                                            {dept.majors.length} Core Specializations
+                                            Có {dept.majors.length} chuyên ngành chính
                                         </p>
                                     </div>
 
@@ -228,7 +229,7 @@ const ClassHierarchyPage = () => {
                                                         <div className="flex items-center gap-2 mt-0.5">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
                                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                                                {major.classes.length} Operating Classes
+                                                                Có {major.classes.length} lớp học đang vận hành
                                                             </span>
                                                         </div>
                                                     </div>
@@ -240,9 +241,9 @@ const ClassHierarchyPage = () => {
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 animate-in zoom-in-95 duration-300">
                                                         {major.classes.map(cls => (
                                                             <div 
-                                                                key={cls.id} 
-                                                                onClick={() => handleClassClick(cls.id)}
-                                                                className="group relative bg-slate-50/50 rounded-3xl border border-slate-100 p-6 hover:bg-white hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-100/50 transition-all cursor-pointer overflow-hidden"
+                                                                 key={cls.id} 
+                                                                 onClick={() => handleClassClick(cls.id)}
+                                                                 className="group relative bg-slate-50/50 rounded-3xl border border-slate-100 p-6 hover:bg-white hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-100/50 transition-all cursor-pointer overflow-hidden"
                                                             >
                                                                 {/* Hover Glow Effect */}
                                                                 <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-3xl blur opacity-0 group-hover:opacity-10 transition duration-500"></div>
@@ -273,7 +274,7 @@ const ClassHierarchyPage = () => {
                                                                             </div>
                                                                         </div>
                                                                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
-                                                                            Cohort {cls.courseYear || 'N/A'}
+                                                                            Khóa tuyển sinh: {cls.courseYear || 'N/A'}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -282,7 +283,7 @@ const ClassHierarchyPage = () => {
                                                         {major.classes.length === 0 && (
                                                             <div className="col-span-full py-12 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
                                                                 <BookOpen size={32} className="mb-2 opacity-20" />
-                                                                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Deployment Pending</p>
+                                                                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Chưa có lớp sinh hoạt</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -307,4 +308,3 @@ const ClassHierarchyPage = () => {
 };
 
 export default ClassHierarchyPage;
-

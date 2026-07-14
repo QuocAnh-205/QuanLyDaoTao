@@ -13,9 +13,9 @@ const Sidebar = () => {
 
     return (
         <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen shadow-xl">
-            <div className="p-6 text-2xl font-black text-blue-500 tracking-tighter border-b border-slate-800">
+            <Link to="/dashboard" className="p-6 text-2xl font-black text-blue-500 tracking-tighter border-b border-slate-800 hover:text-blue-400 block transition-colors">
                 STD MANAGER
-            </div>
+            </Link>
 
             <nav className="flex-1 overflow-y-auto py-4">
                 {filteredMenu.map((item) => {
