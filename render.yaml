@@ -25,12 +25,11 @@ services:
         value: https://stdmanager-frontend.onrender.com
 
   # 2. Frontend Service (Vite React)
-  - type: web
+  - type: static
     name: stdmanager-frontend
-    env: static
     rootDir: quanlydaotaoc/frontend
     buildCommand: npm run build
-    publishDir: dist
+    staticPublishPath: dist
     plan: free
     routes:
       - type: rewrite
@@ -39,3 +38,4 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://stdmanager-backend.onrender.com/api/v1
+
