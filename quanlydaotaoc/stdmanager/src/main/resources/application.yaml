@@ -6,7 +6,7 @@ spring:
     name: stdmanager
 
   datasource:
-    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:stdmanager_db};trustServerCertificate=true
+    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:stdmanager_db};encrypt=true;trustServerCertificate=true
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:UniItAdmin2026}
     # Hibernate 6 tự nhận diện Driver, không nhất thiết phải khai báo thủ công
@@ -28,8 +28,8 @@ spring:
     # repair-on-migrate: true        # Tự động repair checksum mismatch khi migrate
     # out-of-order: false
     locations: classpath:db/migration
-  logging:
-    level:
+logging:
+  level:
       org.flywaydb: DEBUG
 
 # Cấu hình SpringDoc để Swagger hoạt động ổn định
