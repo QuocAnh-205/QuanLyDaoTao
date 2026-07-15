@@ -31,7 +31,6 @@ services:
     rootDir: quanlydaotaoc/frontend
     buildCommand: npm run build
     staticPublishPath: dist
-    plan: free
     routes:
       - type: rewrite
         source: /*
